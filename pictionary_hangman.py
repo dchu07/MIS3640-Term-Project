@@ -26,17 +26,6 @@ def process_glossfile():
     return glossdict
 
 
-def join_file_glossfile(worddict, glossdict):
-    """
-    This function will join the word dict with the gloss dict
-    """
-    ds = [worddict, glossdict]
-    dict = {}
-    for key in worddict.items():
-        dict[key] = tuple(dict[key] for dict in ds)
-
-
-
 # def getRandomWord(wordList):
 #     """
 #     This function returns a random string from the passed list of strings.
@@ -48,7 +37,7 @@ def join_file_glossfile(worddict, glossdict):
 def main():
     worddict = (processfile())
     glossdict = (process_glossfile())
-    print(join_file_glossfile(worddict, glossdict))
+    
 
 
 if __name__ == '__main__':
