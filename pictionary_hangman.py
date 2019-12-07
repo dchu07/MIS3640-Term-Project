@@ -3,7 +3,7 @@ import random
 
 def process_file():
     """
-    This function processes the list of words provided by WordNet
+    This function processes the txt of words provided by WordNet into a dictionary
     """
     file = open('words.txt')
     worddict = {}
@@ -13,7 +13,10 @@ def process_file():
     return worddict
 
 
-def process_gloss_file():
+def process_glossfile():
+    """
+    This function processes the txt of definitions provided by WordNet into a dictionary
+    """
     file = open('gloss.txt')
     glossdict = {}
     for line in file:
@@ -34,10 +37,9 @@ def get_random_word(worddict):
 
 
 def main():
-    # print(processfile('words.txt'))
-    # print(process_glossfile())
-    worddict = process_file()
-    print(get_random_word(worddict))
+    worddict = (processfile())
+    glossdict = (process_glossfile())
+    
 
 
 if __name__ == '__main__':
