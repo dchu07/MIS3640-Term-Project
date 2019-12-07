@@ -4,15 +4,12 @@ def processfile(word_link, def_link):
     """
     This function processes the list of words provided by WordNet
     """
-
     file = open(file_link)
     worddict = {}
     for line in file:
         line = line.split()
         worddict[line[0]] = line[1]
     return worddict
-
->>>>>>> bd06475dbb7b7290cf0c6490ed8caebe35aea03a
 
 
 # def getRandomWord(wordList):
