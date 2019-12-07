@@ -4,7 +4,7 @@ def processfile(word_link, def_link):
     """
     This function processes the list of words provided by WordNet
     """
-    file = open(file_link)
+    file = open(file_name)
     worddict = {}
     for line in file:
         line = line.split()
