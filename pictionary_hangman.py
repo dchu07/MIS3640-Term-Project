@@ -1,7 +1,6 @@
 import random 
-
 from PIL import Image
-from urllib import request
+import urllib.request
 
 
 def process_file():
@@ -54,12 +53,30 @@ def retrieve_image(word_id):
     url = (f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}")
     return url
 
+
+def crop_image(url):
+    image = Image.open(urllib.request.urlopen(url))
+    width, height = image.size
+
+    # below metrics subject to change
+    left = width/3
+    top = height/3
+    right = width/3
+    bottom = height/3
+    image_2 = image.crop((left, top, right, bottom))
+    image_2.show()
+
+
+
+
 def main():
     worddict = (process_file())
     glossdict = (process_glossfile())
     word_id, word = get_random_word(worddict)
     definition = get_gloss(glossdict, word_id)
-    print (retrieve_image(word_id))
+    url = retrieve_image(word_id)
+    print(url)
+    crop_image(url)
 
 
 if __name__ == '__main__':
