@@ -1,15 +1,18 @@
 import random
 import urllib.request
 
-def processfile(file_link):
+def processfile(word_link, def_link):
     """
     This function processes the list of words provided by WordNet
     """
-    file = urllib.request.urlopen(file_link)
+    wordFile = urllib.request.urlopen(word_link)
+    defFile = urllib.request.urlopen(def_link)
     wordDict = {}
-    for line in file:
+    defDict = {}
+    for line in wordFile:
         word = line.strip()
-        wordList.append(word)
+        (key, val) = word.split()
+        wordDict[int(key)] = val
     return wordList
 
 
@@ -22,7 +25,7 @@ def processfile(file_link):
 
 
 def main():
-    print (processfile("http://image-net.org/archive/words.txt"))
+    print (processfile("http://image-net.org/archive/words.txt", "http://image-net.org/archive/gloss.txt"))
 
 
 if __name__ == '__main__':
