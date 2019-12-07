@@ -1,5 +1,8 @@
 import random 
 
+from PIL import Image
+from urllib import request
+
 
 def process_file():
     """
@@ -31,15 +34,32 @@ def get_random_word(worddict):
     """
     This function returns a random string from the passed list of strings.
     """
-    word = random.choice(worddict)
-    for word_id, gloss in word:
-        return word_id, gloss
+    word_id, word = random.choice(list(worddict.items())) 
+    return word_id, word
 
+
+def get_gloss(glossdict, word_id):
+    """
+    This function takes the random word chosen and returns the definition of the word from glossdict.
+    """
+    for key in glossdict:
+        if key == word_id:
+            return glossdict[key]
+
+
+def retrieve_image(word_id):
+    """
+    This function takes the random word and its ID and returns the image url
+    """
+    url = (f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}")
+    return url
 
 def main():
-    worddict = (processfile())
+    worddict = (process_file())
     glossdict = (process_glossfile())
-    
+    word_id, word = get_random_word(worddict)
+    definition = get_gloss(glossdict, word_id)
+    print (retrieve_image(word_id))
 
 
 if __name__ == '__main__':
