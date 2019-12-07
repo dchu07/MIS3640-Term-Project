@@ -1,10 +1,6 @@
 import random
 
-<<<<<<< HEAD
 def processfile():
-=======
-def processfile(word_link, def_link):
->>>>>>> 3bac74aa3322806ecf5d1452e73c1f72de6f855e
     """
     This function processes the list of words provided by WordNet
     """
@@ -16,7 +12,6 @@ def processfile(word_link, def_link):
     return worddict
 
 
-<<<<<<< HEAD
 def process_glossfile():
     file = open('gloss.txt')
     glossdict = {}
@@ -28,15 +23,6 @@ def process_glossfile():
     return glossdict
 
 
-
-
-
-
-
-
-
-=======
->>>>>>> 3bac74aa3322806ecf5d1452e73c1f72de6f855e
 # def getRandomWord(wordList):
 #     """
 #     This function returns a random string from the passed list of strings.
