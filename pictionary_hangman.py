@@ -32,7 +32,7 @@ def process_glossfile():
 
 
 def main():
-    # print (processfile('words.txt'))
+    # print(processfile('words.txt'))
     # print(process_glossfile())
 
 
