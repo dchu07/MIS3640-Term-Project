@@ -1,6 +1,7 @@
-import random
+import random 
 
-def processfile():
+
+def process_file():
     """
     This function processes the list of words provided by WordNet
     """
@@ -12,7 +13,7 @@ def processfile():
     return worddict
 
 
-def process_glossfile():
+def process_gloss_file():
     file = open('gloss.txt')
     glossdict = {}
     for line in file:
@@ -23,17 +24,20 @@ def process_glossfile():
     return glossdict
 
 
-# def getRandomWord(wordList):
-#     """
-#     This function returns a random string from the passed list of strings.
-#     """
-#     wordIndex = random.randint(0, len(wordList) - 1)
-#     return wordList[wordIndex]
+def get_random_word(worddict):
+    """
+    This function returns a random string from the passed list of strings.
+    """
+    word = random.choice(worddict)
+    for word_id, gloss in word:
+        return word_id, gloss
 
 
 def main():
     # print(processfile('words.txt'))
     # print(process_glossfile())
+    worddict = process_file()
+    print(get_random_word(worddict))
 
 
 if __name__ == '__main__':
