@@ -42,7 +42,7 @@ def get_random_word(worddict):
             for url in urls:
                 try:
                     image_link = urlopen(url).read()
-                    return word
+                    return word_id, word
                 except HTTPError as e:
                     continue
         except HTTPError as e:
@@ -50,34 +50,34 @@ def get_random_word(worddict):
             return get_random_word(word_id)
 
 
-# def get_random_word(worddict):
-#     """
-#     This function returns a random string from the passed list of strings.
-#     """
-#     word_id, word = random.choice(list(worddict.items())) 
-#     return word_id, word
+def get_gloss(glossdict, word_id):
+    """
+    This function takes the random word chosen and returns the definition of the word from glossdict
+    """
+    for key in glossdict:
+        if key == word_id:
+            return glossdict[key]
 
 
-# def get_gloss(glossdict, word_id):
-#     """
-#     This function takes the random word chosen and returns the definition of the word from glossdict.
-#     """
-#     for key in glossdict:
-#         if key == word_id:
-#             return glossdict[key]
+def working_image(word_id):
+    """
+    This function takes the word and finds a working image to use for the pictionary portion of the game
+    """
+    pass
 
 
-# def crop_image(url):
-#     image = Image.open(urllib.request.urlopen(url))
-#     width, height = image.size
 
-#     # below metrics subject to change
-#     left = width/3
-#     top = height/3
-#     right = width/3
-#     bottom = height/3
-#     image_2 = image.crop((left, top, right, bottom))
-#     image_2.show()
+def crop_image(url):
+    image = Image.open(urllib.request.urlopen(url))
+    width, height = image.size
+
+    # below metrics subject to change
+    left = width/3
+    top = height/3
+    right = width/3
+    bottom = height/3
+    image_2 = image.crop((left, top, right, bottom))
+    image_2.show()
 
 
 # HANGMANPICS = ['''
@@ -187,12 +187,11 @@ def main():
     worddict = (process_file())
     glossdict = (process_glossfile())
 
-    word, url = get_random_word(worddict)
+    word_id, word = get_random_word(worddict)
+    print(word)
 
-    # word_id, word = get_random_word(worddict)
-    # # print(word)
-    # definition = get_gloss(glossdict, word_id)
-    # # print(definition)
+    definition = get_gloss(glossdict, word_id)
+    print(definition)
     
     # crop_image(url)
 
