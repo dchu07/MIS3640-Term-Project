@@ -1,6 +1,8 @@
 import random 
 from PIL import Image
 import urllib.request
+from urllib.error import HTTPError
+from urllib.request import urlopen
 
 
 def process_file():
@@ -50,8 +52,14 @@ def retrieve_image(word_id):
     """
     This function takes the random word and its ID and returns the image url
     """
-    url = (f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}")
-    return url
+    urls = urlopen("http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+    for url in urls:
+        try:
+            data = urlopen(url).read()
+            return data
+        except HTTPError as e:
+            continue
+
 
 
 def crop_image(url):
@@ -174,6 +182,7 @@ def main():
     worddict = (process_file())
     glossdict = (process_glossfile())
     word_id, word = get_random_word(worddict)
+    print(word_id, word)
     definition = get_gloss(glossdict, word_id)
     url = retrieve_image(word_id)
     crop_image(url)
