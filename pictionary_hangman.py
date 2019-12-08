@@ -187,8 +187,7 @@ def main():
     worddict = (process_file())
     glossdict = (process_glossfile())
 
-    word, url = retrieve_image(worddict)
-    print(url)
+    word, url = get_random_word(worddict)
 
     # word_id, word = get_random_word(worddict)
     # # print(word)
