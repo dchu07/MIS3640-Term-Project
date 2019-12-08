@@ -45,9 +45,9 @@ def retrieve_image(worddict):
                     return word, data
                 except HTTPError as e:
                     continue
-        # except HTTPError as e:
-        #     word_id, word = random.choice(list(worddict.items()))
-        #     return retrieve_image(word_id)
+        except HTTPError as e:
+            word_id, word = random.choice(list(worddict.items()))
+            return retrieve_image(word_id)
 
 
 # def get_random_word(worddict):
