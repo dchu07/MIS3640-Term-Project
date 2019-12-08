@@ -34,20 +34,20 @@ def get_random_word(worddict):
     """
     This function tests whether the word has image urls then adds that word into a new dictionary
     """
-    data = None
-    while data is None: 
+    image_link = None
+    while image_link is None: 
         try:
             word_id, word = random.choice(list(worddict.items()))
             urls = urlopen("http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
             for url in urls:
                 try:
-                    data = urlopen(url).read()
-                    return word, data
+                    image_link = urlopen(url).read()
+                    return word, image_link
                 except HTTPError as e:
                     continue
         except HTTPError as e:
             word_id, word = random.choice(list(worddict.items()))
-            return retrieve_image(word_id)
+            return get_random_word(word_id)
 
 
 # def get_random_word(worddict):
