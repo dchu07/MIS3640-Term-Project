@@ -32,7 +32,7 @@ def process_glossfile():
 
 def get_random_word(worddict):
     """
-    This function tests whether the word has image urls then adds that word into a new dictionary
+    This function tests whether a random word has image urls then returns the word
     """
     image_link = None
     while image_link is None: 
@@ -42,7 +42,7 @@ def get_random_word(worddict):
             for url in urls:
                 try:
                     image_link = urlopen(url).read()
-                    return word, image_link
+                    return word
                 except HTTPError as e:
                     continue
         except HTTPError as e:
