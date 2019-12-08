@@ -30,9 +30,9 @@ def process_glossfile():
         glossdict[id] = gloss
     return glossdict
 
-def retrieve_image(worddict):
+def get_random_word(worddict):
     """
-    This function takes a random word and test whether the word has an image then uses that word as the word for pictionary
+    This function tests whether the word has image urls then adds that word into a new dictionary
     """
     data = None
     while data is None: 
