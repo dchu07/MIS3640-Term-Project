@@ -30,6 +30,7 @@ def process_glossfile():
         glossdict[id] = gloss
     return glossdict
 
+
 def get_random_word(worddict):
     """
     This function tests whether a random word has image urls then returns the word
