@@ -30,7 +30,6 @@ def process_glossfile():
         glossdict[id] = gloss
     return glossdict
 
-
 def get_random_word(worddict):
     """
     This function tests whether a random word has image urls then returns the word
@@ -39,16 +38,18 @@ def get_random_word(worddict):
     while image_link is None: 
         try:
             word_id, word = random.choice(list(worddict.items()))
-            urls = urlopen("http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+            # print(word_id, word)
+            urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+            # print(urls)
             for url in urls:
                 try:
                     image_link = urlopen(url).read()
+                    # print(image_link)
                     return word_id, word
-                except HTTPError as e:
+                except ValueError as e:
                     continue
-        except HTTPError as e:
-            word_id, word = random.choice(list(worddict.items()))
-            return get_random_word(word_id)
+        except ValueError as e:
+            get_random_word(worddict)
 
 
 def get_gloss(glossdict, word_id):
@@ -60,33 +61,41 @@ def get_gloss(glossdict, word_id):
             return glossdict[key]
 
 
-def working_image(word_id):
+def get_image(word_id):
     """
-    This function takes the word and finds a working image to use for the pictionary portion of the game
+    This function takes the word and finds a working image url to use for the pictionary portion of the game
     """
-    worddict = (process_file())
-    try:
-        urls = urlopen("http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
-        for url in urls:
-            try:
-                data = urlopen(url).read()
-                return data
-            except HTTPError as e:
-                continue
-    except HTTPError as e:
-        word_id, word = random.choice(list(worddict.items()))
-        return working_image(word_id)
-    
+    urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+    for url in urls:
+        try:
+            data = urlopen(url).read()
+            # print(data)
+            return url
+        except HTTPError as e:
+            get_image(word_id)
+  
+
+
+
 
 def crop_image(url):
     image = Image.open(urllib.request.urlopen(url))
+    image.show()
     width, height = image.size
+    divided = 3
+
 
     # below metrics subject to change
-    left = width/3
-    top = height/3
-    right = width/3
-    bottom = height/3
+    left = 50
+    top = 50
+    right = 50
+    bottom = 50
+
+    # left = width/divided
+    # top = height/divided
+    # right = width/divided
+    # bottom = height/divided
+
     image_2 = image.crop((left, top, right, bottom))
     image_2.show()
 
@@ -199,12 +208,16 @@ def main():
     glossdict = (process_glossfile())
 
     word_id, word = get_random_word(worddict)
-    print(word)
+    print(word_id, word)
 
-    definition = get_gloss(glossdict, word_id)
-    print(definition)
+    # definition = get_gloss(glossdict, word_id)
+    # print(definition)
+
+    url = get_image(word_id)
     
-    # crop_image(url)
+
+
+    crop_image(url)
 
     # name = input("Hello! What is your name? ")
     # print (f"Hello {name}, Welcome to Pictionary Hangman!")
