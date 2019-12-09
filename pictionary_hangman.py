@@ -75,9 +75,6 @@ def get_image(word_id):
             get_image(word_id)
   
 
-
-
-
 def crop_image(url):
     image = Image.open(urllib.request.urlopen(url))
     image.show()
