@@ -75,7 +75,7 @@ def working_image(word_id):
     except HTTPError as e:
         word_id, word = random.choice(list(worddict.items()))
         return working_image(word_id)
-    pass
+    
 
 
 
@@ -92,7 +92,6 @@ def crop_image(url):
     bottom = height/3
     image_2 = image.crop((left, top, right, bottom))
     image_2.show()
-
 
 
 # HANGMANPICS = ['''
@@ -196,7 +195,6 @@ def crop_image(url):
 #     """
 #     print('Do you want to play again? (yes or no)')
 #     return input().lower().startswith('y')
-
 
 
 def main():
