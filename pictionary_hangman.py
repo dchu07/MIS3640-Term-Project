@@ -78,10 +78,6 @@ def working_image(word_id):
         return working_image(word_id)
     
 
-
-
-
-
 def crop_image(url):
     image = Image.open(urllib.request.urlopen(url))
     width, height = image.size
