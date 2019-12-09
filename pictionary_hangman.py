@@ -64,7 +64,21 @@ def working_image(word_id):
     """
     This function takes the word and finds a working image to use for the pictionary portion of the game
     """
-    pass
+    worddict = (process_file())
+    try:
+        urls = urlopen("http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+        for url in urls:
+            try:
+                data = urlopen(url).read()
+                return data
+            except HTTPError as e:
+                continue
+    except HTTPError as e:
+        word_id, word = random.choice(list(worddict.items()))
+        return working_image(word_id)
+    
+
+
 
 
 
@@ -85,7 +99,7 @@ def crop_image(url):
 #    +---+
 #    |   |
 #        |
-#        |
+#        |  
 #        |
 #        |
 #  =========''', '''
@@ -152,7 +166,7 @@ def crop_image(url):
 
 #     for i in range(9): # replace blanks with correctly guessed letters
 #         if secretWord[i] in correctLetters:
-#             blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
+#             blanks = blanks[:i] + secretWord[i] + blanks[i+1:s]
 
 #     for letter in blanks: # show the secret word with spaces in between each letter
 #         print(letter, end=' ')
