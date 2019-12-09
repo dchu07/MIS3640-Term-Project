@@ -73,10 +73,7 @@ def get_image(word_id):
             return url
         except HTTPError as e:
             get_image(word_id)
-    # except HTTPError as e:
-    #     word_id, word = random.choice(list(worddict.items()))
-    #     return working_image(word_id)
-    
+  
 
 
 
