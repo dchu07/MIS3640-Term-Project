@@ -63,7 +63,6 @@ def working_image(word_id):
     """
     This function takes the word and finds a working image to use for the pictionary portion of the game
     """
-<<<<<<< HEAD
     worddict = (process_file())
     try:
         urls = urlopen("http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
@@ -75,11 +74,11 @@ def working_image(word_id):
                 continue
     except HTTPError as e:
         word_id, word = random.choice(list(worddict.items()))
-        return retrieve_image(word_id)
-=======
+        return working_image(word_id)
     pass
 
->>>>>>> aa22e0bd1e084dbe7e057dcf9fe4295fa6d9ca20
+
+
 
 
 def crop_image(url):
@@ -95,13 +94,12 @@ def crop_image(url):
     image_2.show()
 
 
-<<<<<<< HEAD
-=======
+
 # HANGMANPICS = ['''
 #    +---+
 #    |   |
 #        |
-#        |
+#        |  
 #        |
 #        |
 #  =========''', '''
@@ -168,7 +166,7 @@ def crop_image(url):
 
 #     for i in range(9): # replace blanks with correctly guessed letters
 #         if secretWord[i] in correctLetters:
-#             blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
+#             blanks = blanks[:i] + secretWord[i] + blanks[i+1:s]
 
 #     for letter in blanks: # show the secret word with spaces in between each letter
 #         print(letter, end=' ')
@@ -200,7 +198,7 @@ def crop_image(url):
 #     return input().lower().startswith('y')
 
 
->>>>>>> aa22e0bd1e084dbe7e057dcf9fe4295fa6d9ca20
+
 def main():
     worddict = (process_file())
     glossdict = (process_glossfile())
