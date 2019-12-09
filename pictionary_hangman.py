@@ -75,21 +75,17 @@ def get_image(word_id):
             get_image(word_id)
   
 
-
-
-
 def crop_image(url):
     image = Image.open(urllib.request.urlopen(url))
     image.show()
     width, height = image.size
     divided = 3
 
-
     # below metrics subject to change
-    left = 50
+    left = 50   
     top = 50
-    right = 50
-    bottom = 50
+    right = 150
+    bottom = 150
 
     # left = width/divided
     # top = height/divided
