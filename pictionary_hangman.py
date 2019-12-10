@@ -165,7 +165,7 @@ def displayBoard(missedLetters, correctLetters, secretWord):
 
     blanks = '_' * len(secretWord)
 
-    for i in range(10): # replace blanks with correctly guessed letters
+    for i in range(len(secretWord)): # replace blanks with correctly guessed letters
         if secretWord[i] in correctLetters:
             blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
 
@@ -246,6 +246,9 @@ def main():
                 gameIsDone = True
         else:
             missedLetters = missedLetters + guess
+            for i in range(9):
+                image = Image.open(f'{word}-{i+1}.jpg')
+                image.show()
             # Check if player has guessed too many times and lost
             if len(missedLetters) == 9:
                 displayBoard(missedLetters, correctLetters, secretWord)
@@ -256,7 +259,7 @@ def main():
         # Ask the player if they want to play again (but only if the game is done).
         if gameIsDone:
             if playAgain():
-                word_id, word = get_random_word(worddict)
+                word_id, word, url = get_word_image(worddict)
                 definition = get_gloss(glossdict, word_id)
                 missedLetters = ''
                 correctLetters = ''
