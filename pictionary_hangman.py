@@ -1,4 +1,5 @@
 import random 
+import requests
 from PIL import Image
 import urllib.request
 from urllib.error import HTTPError
@@ -9,7 +10,7 @@ def process_file():
     """
     This function processes the txt of words provided by WordNet into a dictionary
     """
-    file = open('words.txt')
+    file = open('goodwords.txt')
     worddict = {}
     for line in file:
         line = line.split()
@@ -30,26 +31,58 @@ def process_glossfile():
         glossdict[id] = gloss
     return glossdict
 
-def get_random_word(worddict):
+
+def get_word_image(word_dict):
     """
-    This function tests whether a random word has image urls then returns the word
+    returns a valid image-net url
     """
-    image_link = None
-    while image_link is None: 
+    while True:
+        word_id, word = random.choice(list(word_dict.items()))
+        print('Now checking:', word_id, word)
+        url = f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}"
         try:
-            word_id, word = random.choice(list(worddict.items()))
-            # print(word_id, word)
-            urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
-            # print(urls)
-            for url in urls:
-                try:
-                    image_link = urlopen(url).read()
-                    # print(image_link)
-                    return word_id, word
-                except ValueError as e:
+            response = requests.get(url)
+            # If the response was successful, no Exception will be raised
+            response.raise_for_status()
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+            continue
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            continue
+        else:
+            print(response.content.decode('utf8'))
+            if response.content.decode('utf8') == 'The synset is not ready yet. Please stay tuned!':
+                continue
+            else:
+                url = get_image(word_id)
+                if url:
+                    print('Success!')
+                    break
+                else:
                     continue
-        except ValueError as e:
-            get_random_word(worddict)
+    return word_id, word, url
+
+# def get_random_word(worddict):
+#     """
+#     This function tests whether a random word has image urls then returns the word
+#     """
+#     image_link = None
+#     while image_link is None: 
+#         try:
+#             word_id, word = random.choice(list(worddict.items()))
+#             # print(word_id, word)
+#             urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+#             # print(urls)
+#             for url in urls:
+#                 try:
+#                     image_link = urlopen(url).read()
+#                     # print(image_link)
+#                     return word_id, word
+#                 except (ValueError, HTTPError) as e:
+#                     continue
+#         except (ValueError, HTTPError) as e:
+#             get_random_word(worddict)
 
 
 def get_gloss(glossdict, word_id):
@@ -62,206 +95,175 @@ def get_gloss(glossdict, word_id):
 
 
 def get_image(word_id):
-    """
-    This function takes the word and finds a working image url to use for the pictionary portion of the game
-    """
     urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
     for url in urls:
+        print(url)
+        if 'baidu' in url:  # many images hosted at baidu.com are not available
+            continue
         try:
-            data = urlopen(url).read()
-            # print(data)
-            return url
-        except HTTPError as e:
-            get_image(word_id)
+            response = requests.get(url)
+            # If the response was successful, no Exception will be raised
+            response.raise_for_status()
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+            continue
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+            continue
+        else:
+            r = urllib.request.urlopen(url)
+            print(r.headers.get_content_maintype())
+            if r.headers.get_content_maintype() == 'text':
+                continue
+            elif r.headers.get_content_maintype() == 'image':
+                print('Success!')
+                return url
+    return None
+
+# def get_image(word_id):
+#     """
+#     This function takes the word and finds a working image url to use for the pictionary portion of the game
+#     """
+#     urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
+#     for url in urls:
+#         try:
+#             data = urlopen(url).read()
+#             # print(data)
+#             return url
+#         except HTTPError as e:
+#             get_image(word_id)
   
 
-def crop_image(url):
+def crop_image(url, word):
     image = Image.open(urllib.request.urlopen(url))
-    image.show()
+    # image.show()
     width, height = image.size
-    divided = 3
+    pieces = 9
 
-    # below metrics subject to change
-    left = 50   
-    top = 50
-    right = 150
-    bottom = 150
+    # for loop to save image everytime we crop it
 
-    # left = width/divided
-    # top = height/divided
-    # right = width/divided
-    # bottom = height/divided
+    picture_list = []
 
-    image_2 = image.crop((left, top, right, bottom))
-    image_2.show()
+    for i in range(1,10):
+        left = 0
+        top = 0
+        right = width*(i/pieces)
+        bottom = height*(i/pieces)
+        image_cropped = image.crop((left, top, right, bottom))
+        image_cropped.save(f'{word}-{i}.jpg')
+        address = (f'{word}-{i}.jpg')
+        picture_list.append(address)
+        # image_cropped.show()
+    return picture_list
+        
 
+def displayBoard(missedLetters, correctLetters, secretWord):
+    print('Missed letters:', end=' ')
+    for letter in missedLetters:
+        print(letter, end=' ')
+    print()
 
-# HANGMANPICS = ['''
-#    +---+
-#    |   |
-#        |
-#        |  
-#        |
-#        |
-#  =========''', '''
+    blanks = '_' * len(secretWord)
 
-#    +---+
-#    |   |
-#    O   |
-#        |
-#        |
-#        |
-#  =========''', '''
+    for i in range(10): # replace blanks with correctly guessed letters
+        if secretWord[i] in correctLetters:
+            blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
 
-#    +---+
-#    |   |
-#    O   |
-#    |   |
-#        |
-#        |
-#  =========''', '''
-
-#    +---+
-#    |   |
-#    O   |
-#   /|   |
-#        |
-#        |
-#  =========''', '''
-
-#    +---+
-#    |   |
-#    O   |
-#   /|\  |
-#        |
-#        |
-#  =========''', '''
-
-#    +---+
-#    |   |
-#    O   |
-#   /|\  |
-#   /    |
-#        |
-#  =========''', '''
-
-#    +---+
-#    |   |
-#    O   |
-#   /|\  |
-#   / \  |
-#        |
-# =========''']
+    for letter in blanks: # show the secret word with spaces in between each letter
+        print(letter, end=' ')
+    print()
 
 
-# def displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord):
-#     print(HANGMANPICS[len(missedLetters)])
-#     print()
-
-#     print('Missed letters:', end=' ')
-#     for letter in missedLetters:
-#         print(letter, end=' ')
-#     print()
-
-#     blanks = '_' * len(secretWord)
-
-#     for i in range(9): # replace blanks with correctly guessed letters
-#         if secretWord[i] in correctLetters:
-#             blanks = blanks[:i] + secretWord[i] + blanks[i+1:s]
-
-#     for letter in blanks: # show the secret word with spaces in between each letter
-#         print(letter, end=' ')
-#     print()
+def getGuess(alreadyGuessed):
+    """
+    Returns the letter the player entered. This function makes sure the player entered a single letter, and not something else.
+    """
+    while True:
+        print('Guess a letter.')
+        guess = input()
+        guess = guess.lower()
+        if len(guess) != 1:
+            print('Please enter a single letter.')
+        elif guess in alreadyGuessed:
+            print('You have already guessed that letter. Choose again.')
+        elif guess not in 'abcdefghijklmnopqrstuvwxyz':
+            print('Please enter a LETTER.')
+        return guess
 
 
-# def getGuess(alreadyGuessed):
-#     """
-#     Returns the letter the player entered. This function makes sure the player entered a single letter, and not something else.
-#     """
-#     while True:
-#         print('Guess a letter.')
-#         guess = input()
-#         guess = guess.lower()
-#         if len(guess) != 1:
-#             print('Please enter a single letter.')
-#         elif guess in alreadyGuessed:
-#             print('You have already guessed that letter. Choose again.')
-#         elif guess not in 'abcdefghijklmnopqrstuvwxyz':
-#             print('Please enter a LETTER.')
-#         return guess
-
-
-# def playAgain():
-#     """
-#     This function returns True if the player wants to play again, otherwise it returns False.
-#     """
-#     print('Do you want to play again? (yes or no)')
-#     return input().lower().startswith('y')
+def playAgain():
+    """
+    This function returns True if the player wants to play again, otherwise it returns False.
+    """
+    print('Do you want to play again? (yes or no)')
+    return input().lower().startswith('y')
 
 
 def main():
-    worddict = (process_file())
-    glossdict = (process_glossfile())
+    worddict = process_file()
+    glossdict = process_glossfile()
 
-    word_id, word = get_random_word(worddict)
+    word_id, word, url = get_word_image(worddict)
     print(word_id, word)
 
-    # definition = get_gloss(glossdict, word_id)
+    definition = get_gloss(glossdict, word_id)
     # print(definition)
-
-    url = get_image(word_id)
     
+    picture_list = crop_image(url, word)
 
+    name = input("Hello! What is your name? ")
+    print (f"Hello {name}, Welcome to Pictionary Hangman!")
 
-    crop_image(url)
+    missedLetters = ''
+    correctLetters = ''
+    secretWord = word
+    gameIsDone = False
 
-    # name = input("Hello! What is your name? ")
-    # print (f"Hello {name}, Welcome to Pictionary Hangman!")
-
-    # missedLetters = ''
-    # correctLetters = ''
-    # secretWord = word
-    # gameIsDone = False
-
-    # while True:
-    #     displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
-    #     # Let the player type in a letter.
-    #     guess = getGuess(missedLetters + correctLetters)
+    while True:    
+        displayBoard(missedLetters, correctLetters, secretWord)
+        # Let the player type in a letter.
+        guess = getGuess(missedLetters + correctLetters)
         
-    #     if guess in secretWord:
-    #         correctLetters = correctLetters + guess
+        # for address in picture_list:
+        #         image = Image.open(address)
+        #         image.show()
+
+
+        if guess in secretWord:
+            correctLetters = correctLetters + guess
         
-    #         # Check if the player has won
-    #         foundAllLetters = True
-    #         for i in range(9):
-    #             if secretWord[i] not in correctLetters:
-    #                 foundAllLetters = False
-    #                 break
-    #         if foundAllLetters:
-    #             print('Yes! The secret word is "' + secretWord + '"! You have won!')
-    #             print(f'The definition of this word is {definition}')
-    #             gameIsDone = True
-    #     else:
-    #         missedLetters = missedLetters + guess
+            # Check if the player has won
+            foundAllLetters = True
+            for i in range(9):
+                if secretWord[i] not in correctLetters:
+                    foundAllLetters = False
+                    image = Image.open(f'{word}-{i}.jpg')
+                    image.show()
+                    break
+            if foundAllLetters:
+                print('Yes! The secret word is "' + secretWord + '"! You have won!')
+                print(f'The definition of this word is {definition}')
+                gameIsDone = True
+        else:
+            missedLetters = missedLetters + guess
+            # Check if player has guessed too many times and lost
+            if len(missedLetters) == 9:
+                displayBoard(missedLetters, correctLetters, secretWord)
+                print('You have run out of guesses! The word was "' + secretWord + '"')                    
+                print(f'The definition of this word is {definition}')
+                gameIsDone = True
 
-    #         # Check if player has guessed too many times and lost
-    #         if len(missedLetters) == 9:
-    #             displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
-    #             print('You have run out of guesses! The word was "' + secretWord + '"')
-    #             print(f'The definition of this word is {definition}')
-    #             gameIsDone = True
-
-    #     # Ask the player if they want to play again (but only if the game is done).
-    #     if gameIsDone:
-    #         if playAgain():
-    #             word_id, word = get_random_word(worddict)
-    #             definition = get_gloss(glossdict, word_id)
-    #             missedLetters = ''
-    #             correctLetters = ''
-    #             gameIsDone = False
-    #             secretWord = word
-    #         else:
-    #             break
+        # Ask the player if they want to play again (but only if the game is done).
+        if gameIsDone:
+            if playAgain():
+                word_id, word = get_random_word(worddict)
+                definition = get_gloss(glossdict, word_id)
+                missedLetters = ''
+                correctLetters = ''
+                gameIsDone = False
+                secretWord = word
+            else:
+                break
 
 
 if __name__ == '__main__':
