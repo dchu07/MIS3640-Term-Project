@@ -38,7 +38,7 @@ def get_word_image(word_dict):
     """
     while True:
         word_id, word = random.choice(list(word_dict.items()))
-        print('Now checking:', word_id, word)
+        # print('Now checking:', word_id, word)
         url = f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}"
         try:
             response = requests.get(url)
@@ -51,13 +51,13 @@ def get_word_image(word_dict):
             print(f'Other error occurred: {err}')
             continue
         else:
-            print(response.content.decode('utf8'))
+            # print(response.content.decode('utf8'))
             if response.content.decode('utf8') == 'The synset is not ready yet. Please stay tuned!':
                 continue
             else:
                 url = get_image(word_id)
                 if url:
-                    print('Success!')
+                    # print('Success!')
                     break
                 else:
                     continue
@@ -95,9 +95,12 @@ def get_gloss(glossdict, word_id):
 
 
 def get_image(word_id):
+    """
+    gets a working image url to use for the pictionary portion of the game
+    """
     urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
     for url in urls:
-        print(url)
+        # print(url)
         if 'baidu' in url:  # many images hosted at baidu.com are not available
             continue
         try:
@@ -112,11 +115,11 @@ def get_image(word_id):
             continue
         else:
             r = urllib.request.urlopen(url)
-            print(r.headers.get_content_maintype())
+            # print(r.headers.get_content_maintype())
             if r.headers.get_content_maintype() == 'text':
                 continue
             elif r.headers.get_content_maintype() == 'image':
-                print('Success!')
+                # print('Success!')
                 return url
     return None
 
@@ -135,6 +138,9 @@ def get_image(word_id):
   
 
 def crop_image(url, word):
+    """
+    crops the functioning image and crops it into 9 pieces and saves it into a local drive
+    """
     image = Image.open(urllib.request.urlopen(url))
     # image.show()
     width, height = image.size
@@ -158,6 +164,9 @@ def crop_image(url, word):
         
 
 def displayBoard(missedLetters, correctLetters, secretWord):
+    """
+    displays the pictionary playing board (the letters)
+    """
     print('Missed letters:', end=' ')
     for letter in missedLetters:
         print(letter, end=' ')
@@ -204,7 +213,8 @@ def main():
     glossdict = process_glossfile()
 
     word_id, word, url = get_word_image(worddict)
-    print(word_id, word)
+    word = word.lower()
+    # print(word_id, word)
 
     definition = get_gloss(glossdict, word_id)
     # print(definition)
@@ -231,14 +241,11 @@ def main():
 
         if guess in secretWord:
             correctLetters = correctLetters + guess
-        
             # Check if the player has won
             foundAllLetters = True
-            for i in range(9):
+            for i in range(len(secretWord)):
                 if secretWord[i] not in correctLetters:
                     foundAllLetters = False
-                    image = Image.open(f'{word}-{i}.jpg')
-                    image.show()
                     break
             if foundAllLetters:
                 print('Yes! The secret word is "' + secretWord + '"! You have won!')
@@ -246,9 +253,10 @@ def main():
                 gameIsDone = True
         else:
             missedLetters = missedLetters + guess
-            for i in range(9):
-                image = Image.open(f'{word}-{i+1}.jpg')
+            for i in range(len(missedLetters),len(missedLetters)+1):
+                image = Image.open(f'{word}-{i}.jpg')
                 image.show()
+                break
             # Check if player has guessed too many times and lost
             if len(missedLetters) == 9:
                 displayBoard(missedLetters, correctLetters, secretWord)
@@ -259,12 +267,7 @@ def main():
         # Ask the player if they want to play again (but only if the game is done).
         if gameIsDone:
             if playAgain():
-                word_id, word, url = get_word_image(worddict)
-                definition = get_gloss(glossdict, word_id)
-                missedLetters = ''
-                correctLetters = ''
-                gameIsDone = False
-                secretWord = word
+                main()
             else:
                 break
 
