@@ -38,7 +38,7 @@ def get_word_image(word_dict):
     """
     while True:
         word_id, word = random.choice(list(word_dict.items()))
-        print('Now checking:', word_id, word)
+        # print('Now checking:', word_id, word)
         url = f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}"
         try:
             response = requests.get(url)
@@ -51,13 +51,13 @@ def get_word_image(word_dict):
             print(f'Other error occurred: {err}')
             continue
         else:
-            print(response.content.decode('utf8'))
+            # print(response.content.decode('utf8'))
             if response.content.decode('utf8') == 'The synset is not ready yet. Please stay tuned!':
                 continue
             else:
                 url = get_image(word_id)
                 if url:
-                    print('Success!')
+                    # print('Success!')
                     break
                 else:
                     continue
@@ -100,7 +100,7 @@ def get_image(word_id):
     """
     urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
     for url in urls:
-        print(url)
+        # print(url)
         if 'baidu' in url:  # many images hosted at baidu.com are not available
             continue
         try:
@@ -115,11 +115,11 @@ def get_image(word_id):
             continue
         else:
             r = urllib.request.urlopen(url)
-            print(r.headers.get_content_maintype())
+            # print(r.headers.get_content_maintype())
             if r.headers.get_content_maintype() == 'text':
                 continue
             elif r.headers.get_content_maintype() == 'image':
-                print('Success!')
+                # print('Success!')
                 return url
     return None
 
@@ -213,7 +213,7 @@ def main():
     glossdict = process_glossfile()
 
     word_id, word, url = get_word_image(worddict)
-    print(word_id, word)
+    # print(word_id, word)
 
     definition = get_gloss(glossdict, word_id)
     # print(definition)
@@ -266,12 +266,7 @@ def main():
         # Ask the player if they want to play again (but only if the game is done).
         if gameIsDone:
             if playAgain():
-                word_id, word = get_random_word(worddict)
-                definition = get_gloss(glossdict, word_id)
-                missedLetters = ''
-                correctLetters = ''
-                gameIsDone = False
-                secretWord = word
+                main()
             else:
                 break
 
