@@ -165,7 +165,7 @@ def displayBoard(missedLetters, correctLetters, secretWord):
 
     blanks = '_' * len(secretWord)
 
-    for i in range(10): # replace blanks with correctly guessed letters
+    for i in range(len(secretWord)): # replace blanks with correctly guessed letters
         if secretWord[i] in correctLetters:
             blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
 
@@ -234,7 +234,7 @@ def main():
         
             # Check if the player has won
             foundAllLetters = True
-            for i in range(9):
+            for i in range(len(secretWord)):
                 if secretWord[i] not in correctLetters:
                     foundAllLetters = False
                     image = Image.open(f'{word}-{i}.jpg')
