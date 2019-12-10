@@ -95,6 +95,9 @@ def get_gloss(glossdict, word_id):
 
 
 def get_image(word_id):
+    """
+    gets a working image url to use for the pictionary portion of the game
+    """
     urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
     for url in urls:
         print(url)
@@ -135,6 +138,9 @@ def get_image(word_id):
   
 
 def crop_image(url, word):
+    """
+    crops the functioning image and crops it into 9 pieces and saves it into a local drive
+    """
     image = Image.open(urllib.request.urlopen(url))
     # image.show()
     width, height = image.size
@@ -158,6 +164,9 @@ def crop_image(url, word):
         
 
 def displayBoard(missedLetters, correctLetters, secretWord):
+    """
+    displays the pictionary playing board (the letters)
+    """
     print('Missed letters:', end=' ')
     for letter in missedLetters:
         print(letter, end=' ')
