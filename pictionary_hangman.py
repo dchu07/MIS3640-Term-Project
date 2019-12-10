@@ -213,6 +213,7 @@ def main():
     glossdict = process_glossfile()
 
     word_id, word, url = get_word_image(worddict)
+    word = word.lower()
     # print(word_id, word)
 
     definition = get_gloss(glossdict, word_id)
