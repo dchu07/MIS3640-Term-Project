@@ -72,10 +72,6 @@ def getRandomWord(wordList):
   /|\  |
   / \  |
        |
-=========''']"""
-
-
-"""def displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord):
     print(HANGMANPICS[len(missedLetters)])
     print()
 
