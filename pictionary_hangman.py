@@ -240,14 +240,11 @@ def main():
 
         if guess in secretWord:
             correctLetters = correctLetters + guess
-        
             # Check if the player has won
             foundAllLetters = True
             for i in range(len(secretWord)):
                 if secretWord[i] not in correctLetters:
                     foundAllLetters = False
-                    image = Image.open(f'{word}-{i}.jpg')
-                    image.show()
                     break
             if foundAllLetters:
                 print('Yes! The secret word is "' + secretWord + '"! You have won!')
@@ -255,6 +252,10 @@ def main():
                 gameIsDone = True
         else:
             missedLetters = missedLetters + guess
+            for i in range(len(missedLetters),len(missedLetters)+1):
+                image = Image.open(f'{word}-{i}.jpg')
+                image.show()
+                break
             # Check if player has guessed too many times and lost
             if len(missedLetters) == 9:
                 displayBoard(missedLetters, correctLetters, secretWord)
