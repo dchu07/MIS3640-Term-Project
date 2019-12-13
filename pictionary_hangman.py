@@ -1,4 +1,4 @@
-import random 
+import random
 import requests
 from PIL import Image
 import urllib.request
@@ -68,7 +68,7 @@ def get_word_image(word_dict):
 #     This function tests whether a random word has image urls then returns the word
 #     """
 #     image_link = None
-#     while image_link is None: 
+#     while image_link is None:
 #         try:
 #             word_id, word = random.choice(list(worddict.items()))
 #             # print(word_id, word)
@@ -101,7 +101,7 @@ def get_image(word_id):
     urls = urlopen(f"http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={word_id}").read().decode('utf-8').split()
     for url in urls:
         # print(url)
-        if 'baidu' in url:  # many images hosted at baidu.com are not available
+        if 'baidu' in url or 'pups4sale' in url or url[0] == '/' or 'istockphoto' in url or url[0] == ' ':  # many images hosted at baidu.com are not available
             continue
         try:
             response = requests.get(url)
@@ -121,7 +121,7 @@ def get_image(word_id):
             elif r.headers.get_content_maintype() == 'image':
                 # print('Success!')
                 return url
-    return None
+    #return None
 
 # def get_image(word_id):
 #     """
@@ -135,7 +135,7 @@ def get_image(word_id):
 #             return url
 #         except HTTPError as e:
 #             get_image(word_id)
-  
+
 
 def crop_image(url, word):
     """
@@ -156,12 +156,12 @@ def crop_image(url, word):
         right = width*(i/pieces)
         bottom = height*(i/pieces)
         image_cropped = image.crop((left, top, right, bottom))
-        image_cropped.save(f'{word}-{i}.jpg')
+        image_cropped.save(f'static/{word}-{i}.jpg')
         address = (f'{word}-{i}.jpg')
         picture_list.append(address)
         # image_cropped.show()
     return picture_list
-        
+
 
 def displayBoard(missedLetters, correctLetters, secretWord):
     """
@@ -183,6 +183,17 @@ def displayBoard(missedLetters, correctLetters, secretWord):
     print()
 
 
+def verifyGuess(guess, incorrect_guesses, correct_guesses):
+    guess = guess.lower()
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    if len(guess) == 1 and guess in alphabet:
+        if guess in incorrect_guesses or guess in correct_guesses:
+            return 'You have already entered that letter.'
+        else:
+            return True
+    else:
+        return 'You have entered an invalid letter.'
+
 def getGuess(alreadyGuessed):
     """
     Returns the letter the player entered. This function makes sure the player entered a single letter, and not something else.
@@ -199,6 +210,23 @@ def getGuess(alreadyGuessed):
             print('Please enter a LETTER.')
         return guess
 
+def guessToString(guess_list):
+    guess_string = ''
+    for x in guess_list:
+        if x == guess_list[-1]:
+            guess_string += x
+        else:
+            guess_string += x + ", "
+    return guess_string
+
+def letterUnderscore(secret_word, correct_guesses):
+    letter_underscore = ''
+    for x in secret_word: # replace blanks with correctly guessed letters
+        if x not in correct_guesses:
+            letter_underscore += "_ "
+        else:
+            letter_underscore += x + " "
+    return letter_underscore
 
 def playAgain():
     """
@@ -218,7 +246,7 @@ def main():
 
     definition = get_gloss(glossdict, word_id)
     # print(definition)
-    
+
     picture_list = crop_image(url, word)
 
     name = input("Hello! What is your name? ")
@@ -229,11 +257,11 @@ def main():
     secretWord = word
     gameIsDone = False
 
-    while True:    
+    while True:
         displayBoard(missedLetters, correctLetters, secretWord)
         # Let the player type in a letter.
         guess = getGuess(missedLetters + correctLetters)
-        
+
         # for address in picture_list:
         #         image = Image.open(address)
         #         image.show()
@@ -260,7 +288,7 @@ def main():
             # Check if player has guessed too many times and lost
             if len(missedLetters) == 9:
                 displayBoard(missedLetters, correctLetters, secretWord)
-                print('You have run out of guesses! The word was "' + secretWord + '"')                    
+                print('You have run out of guesses! The word was "' + secretWord + '"')
                 print(f'The definition of this word is {definition}')
                 gameIsDone = True
 
